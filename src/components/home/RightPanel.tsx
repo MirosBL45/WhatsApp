@@ -8,10 +8,11 @@ import ChatPlaceholder from './ChatPlaceholder';
 import GroupMembersDialog from './GroupMembersDialog';
 
 export default function RightPanel() {
-  const selectedConversation = null;
+  const selectedConversation = true;
   if (!selectedConversation) return <ChatPlaceholder />;
 
-  const conversationName = 'John Doe';
+  const conversationName = 'Mika Pajic';
+  const isGroup = true;
 
   return (
     <div className="w-3/4 flex flex-col">
@@ -27,7 +28,7 @@ export default function RightPanel() {
             </Avatar>
             <div className="flex flex-col">
               <p>{conversationName}</p>
-              {/* {isGroup && <GroupMembersDialog />} */}
+              {isGroup && <GroupMembersDialog />}
             </div>
           </div>
 
