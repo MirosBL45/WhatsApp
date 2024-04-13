@@ -25,7 +25,8 @@ export const conversations = [
     lastMessage: {
       _id: '2',
       messageType: 'text',
-      content: 'Hey there you!',
+      content:
+        'Hey there you! Hey there you! Hey there you! Hey there you! Hey there you! Hey there you! Hey there you! Hey there you! Hey there you! Hey there you! Hey there you! ',
       sender: 'user2',
     },
     sender: 'user4',
