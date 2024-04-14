@@ -21,3 +21,21 @@ export const addTask = mutation({
     return taskId;
   },
 });
+
+export const completeTask = mutation({
+  args: {
+    id: v.id('tasks'),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.id, { completed: true });
+  },
+});
+
+export const deleteTask = mutation({
+  args: {
+    id: v.id('tasks'),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.delete(args.id);
+  },
+});
