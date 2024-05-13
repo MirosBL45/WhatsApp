@@ -86,7 +86,7 @@ const config = {
         'green-chat': 'hsl(var(--green-chat))',
       },
       backgroundImage: {
-        'chat-tile-light': "url('/bg-light.png')",
+        'chat-tile-light': "url('/bg-light.webp')",
         'chat-tile-dark': "url('/bg-dark.png')",
       },
     },

@@ -1,9 +1,10 @@
 import { conversations } from '@/dummy-data/db';
 import Conversation from './Conversation';
-import { ListFilter, MessageSquareDiff, Search } from 'lucide-react';
+import { ListFilter, Search } from 'lucide-react';
 import { Input } from '../ui/input';
 import ThemeSwitch from './ThemeSwitch';
 import { UserButton } from '@clerk/nextjs';
+import UserListDialog from './UserListDialog';
 
 export default function LeftPanel() {
   return (
@@ -14,8 +15,7 @@ export default function LeftPanel() {
           <UserButton />
 
           <div className="flex items-center gap-3">
-            <MessageSquareDiff size={20} />{' '}
-            {/* TODO: This line will be replaced with <UserListDialog /> */}
+            <UserListDialog />
             <ThemeSwitch />
           </div>
         </div>
