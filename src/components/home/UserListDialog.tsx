@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -17,13 +17,20 @@ import { ImageIcon, MessageSquareDiff } from 'lucide-react';
 import { users } from '@/dummy-data/db';
 import { Id } from '../../../convex/_generated/dataModel';
 
-const UserListDialog = () => {
+function UserListDialog() {
   const [selectedUsers, setSelectedUsers] = useState<Id<'users'>[]>([]);
   const [groupName, setGroupName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [renderedImage, setRenderedImage] = useState('');
   const imgRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!selectedImage) return setSelectedImage('');
+    const reader = new FileReader();
+    reader.onload = (e) => setRenderedImage(e.target?.result);
+    reader.readAsDataURL(selectedImage);
+  }, [selectedImage]);
 
   return (
     <Dialog>
@@ -48,6 +55,13 @@ const UserListDialog = () => {
           </div>
         )}
         {/* TODO: input file */}
+        <input
+          type="file"
+          accept="image/*"
+          ref={imgRef}
+          hidden
+          onChange={(e) => setSelectedImage(e.target.files[0])}
+        />
         {selectedUsers.length > 1 && (
           <>
             <Input
@@ -55,7 +69,10 @@ const UserListDialog = () => {
               value={groupName}
               onChange={(e) => setGroupName(e.target.value)}
             />
-            <Button className="flex gap-2">
+            <Button
+              className="flex gap-2"
+              onClick={() => imgRef.current?.click()}
+            >
               <ImageIcon size={20} />
               Group Image
             </Button>
@@ -122,5 +139,5 @@ const UserListDialog = () => {
       </DialogContent>
     </Dialog>
   );
-};
+}
 export default UserListDialog;
