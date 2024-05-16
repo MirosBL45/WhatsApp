@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -14,10 +15,11 @@ import {
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { ImageIcon, MessageSquareDiff } from 'lucide-react';
-// import { users } from '@/dummy-data/db';
+import { users } from '@/dummy-data/db';
 import { Id } from '../../../convex/_generated/dataModel';
 import { useMutation, useQuery } from 'convex/react';
 import { api } from '../../../convex/_generated/api';
+import toast from 'react-hot-toast';
 
 function UserListDialog() {
   const [selectedUsers, setSelectedUsers] = useState<Id<'users'>[]>([]);
@@ -25,9 +27,12 @@ function UserListDialog() {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [renderedImage, setRenderedImage] = useState('');
+
   const imgRef = useRef<HTMLInputElement>(null);
+  const dialogCloseRef = useRef<HTMLButtonElement>(null);
 
   const createConversation = useMutation(api.conversations.createConversation);
+  const generateUploadUrl = useMutation(api.conversations.generateUploadUrl);
   const me = useQuery(api.users.getMe);
   const users = useQuery(api.users.getUsers);
 
@@ -45,8 +50,32 @@ function UserListDialog() {
           isGroup: false,
         });
       } else {
+        const postUrl = await generateUploadUrl();
+
+        const result = await fetch(postUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': selectedImage?.type },
+          body: selectedImage,
+        });
+
+        const { storageId } = await result.json();
+        await createConversation({
+          participants: [...selectedUsers, me?._id],
+          isGroup: true,
+          admin: me?._id,
+          groupName,
+          groupImage: storageId,
+        });
       }
+
+      dialogCloseRef.current?.click();
+      setSelectedUsers([]);
+      setGroupName('');
+      setSelectedImage(null);
+
+      // TODO => Update a global state called 'SelectedConversation'
     } catch (error) {
+      toast.error('Failed to create conversation');
       console.error(error);
     } finally {
       setIsLoading(false);
@@ -68,6 +97,7 @@ function UserListDialog() {
       <DialogContent>
         <DialogHeader>
           {/* TODO: <DialogClose /> will be here */}
+          <DialogClose ref={dialogCloseRef} />
           <DialogTitle>USERS</DialogTitle>
         </DialogHeader>
 
