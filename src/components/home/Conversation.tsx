@@ -4,6 +4,7 @@ import { MessageSeenSvg } from '@/lib/svgs';
 import { ImageIcon, Users, VideoIcon } from 'lucide-react';
 import { useQuery } from 'convex/react';
 import { api } from '../../../convex/_generated/api';
+import { useConversationStore } from '@/store/chat-store';
 
 export default function Conversation({ conversation }: { conversation: any }) {
   const conversationImage = conversation.groupImage || conversation.image;
@@ -12,10 +13,14 @@ export default function Conversation({ conversation }: { conversation: any }) {
   const lastMessageType = lastMessage?.messageType;
   const me = useQuery(api.users.getMe);
 
+  const { selectedConversation, setSelectedConversation } = useConversationStore();
+  const activeBgClass = selectedConversation?._id === conversation._id;
+
   return (
     <>
       <div
-        className={`flex gap-2 items-center p-3 hover:bg-chat-hover cursor-pointer `}
+        className={`flex gap-2 items-center p-3 hover:bg-chat-hover cursor-pointer ${activeBgClass ? 'bg-gray-primary' : ''}`}
+        onClick={() => setSelectedConversation(conversation)}
       >
         <Avatar className="border border-gray-900 overflow-visible relative">
           {conversation.isOnline && (
@@ -44,7 +49,7 @@ export default function Conversation({ conversation }: { conversation: any }) {
             {lastMessage?.sender === me?._id && <MessageSeenSvg />}
             {/* {lastMessage?.sender === authUser?._id ? <MessageSeenSvg /> : ''} */}
             {conversation.isGroup && <Users size={16} />}
-            {!lastMessage && 'Say Heeellooo!'}
+            {!lastMessage && 'Say Hello!'}
             {lastMessageType === 'text' ? (
               lastMessage?.content.length > 30 ? (
                 <span className="text-xs">
