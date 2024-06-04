@@ -43,5 +43,7 @@ export const sendTextMessage = mutation({
       conversation: args.conversation,
       messageType: 'text',
     });
+
+    // chat gpt later
   },
 });
