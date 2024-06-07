@@ -11,6 +11,7 @@ type MediaVideoDialogProps = {
   onClose: () => void;
   selectedVideo: File;
   isLoading: boolean;
+  handleSendVideo: () => void;
 };
 
 export default function MediaVideoDialog({
@@ -18,6 +19,7 @@ export default function MediaVideoDialog({
   onClose,
   selectedVideo,
   isLoading,
+  handleSendVideo,
 }: MediaVideoDialogProps) {
   const renderedVideo = URL.createObjectURL(
     new Blob([selectedVideo], { type: 'video/mp4' })
@@ -37,7 +39,11 @@ export default function MediaVideoDialog({
             <ReactPlayer url={renderedVideo} controls width={'100%'} />
           )}
         </div>
-        <Button className="w-full" disabled={isLoading}>
+        <Button
+          onClick={handleSendVideo}
+          className="w-full"
+          disabled={isLoading}
+        >
           {isLoading ? 'Sending...' : 'Send'}
         </Button>
       </DialogContent>

@@ -55,6 +55,32 @@ export default function MediaDropdown() {
     }
   }
 
+  async function handleSendVideo() {
+    setIsLoading(true);
+    try {
+      const postUrl = await generateUploadUrl();
+      const result = await fetch(postUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': selectedVideo!.type },
+        body: selectedVideo,
+      });
+
+      const { storageId } = await result.json();
+
+      await sendVideo({
+        videoId: storageId,
+        conversation: selectedConversation!._id,
+        sender: me!._id,
+      });
+
+      setSelectedVideo(null);
+    } catch (error) {
+      toast.error('Failed to send video');
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   return (
     <>
       <input
@@ -91,6 +117,7 @@ export default function MediaDropdown() {
           }}
           selectedVideo={selectedVideo}
           isLoading={isLoading}
+          handleSendVideo={handleSendVideo}
         />
       )}
 
