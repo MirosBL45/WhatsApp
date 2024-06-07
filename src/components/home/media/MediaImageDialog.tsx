@@ -12,6 +12,7 @@ type MediaImageDialogProps = {
   onClose: () => void;
   selectedImage: File;
   isLoading: boolean;
+  handleSendImage: () => void;
 };
 
 export default function MediaImageDialog({
@@ -19,6 +20,7 @@ export default function MediaImageDialog({
   onClose,
   selectedImage,
   isLoading,
+  handleSendImage,
 }: MediaImageDialogProps) {
   const [renderedImage, setRenderedImage] = useState<string | null>(null);
 
@@ -48,7 +50,7 @@ export default function MediaImageDialog({
               height={300}
             />
           )}
-          <Button className="w-full disabled={isLoading}">
+          <Button onClick={handleSendImage} className="w-full disabled={isLoading}">
             {isLoading ? 'Sending...' : 'Send'}
           </Button>
         </DialogDescription>

@@ -1,5 +1,9 @@
+import { useConversationStore } from '@/store/chat-store';
+import { useMutation, useQuery } from 'convex/react';
 import { ImageIcon, Plus, Video } from 'lucide-react';
 import { useRef, useState } from 'react';
+import { toast } from 'react-hot-toast';
+import { api } from '../../../convex/_generated/api';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,6 +11,7 @@ import {
   DropdownMenuItem,
 } from '../ui/dropdown-menu';
 import MediaImageDialog from './media/MediaImageDialog';
+import MediaVideoDialog from './media/MediaVideoDialog';
 
 export default function MediaDropdown() {
   const imageInput = useRef<HTMLInputElement>(null);
@@ -15,6 +20,40 @@ export default function MediaDropdown() {
   const [selectedVideo, setSelectedVideo] = useState<File | null>(null);
 
   const [isLoading, setIsLoading] = useState(false);
+
+  const generateUploadUrl = useMutation(api.conversations.generateUploadUrl);
+  const sendImage = useMutation(api.messages.sendImage);
+  const sendVideo = useMutation(api.messages.sendVideo);
+
+  const me = useQuery(api.users.getMe);
+  const { selectedConversation } = useConversationStore();
+
+  async function handleSendImage() {
+    setIsLoading(true);
+    try {
+      const postUrl = await generateUploadUrl();
+
+      const result = await fetch(postUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': selectedImage!.type },
+        body: selectedImage,
+      });
+
+      const { storageId } = await result.json();
+
+      await sendImage({
+        conversation: selectedConversation!._id,
+        imgId: storageId,
+        sender: me!._id,
+      });
+
+      setSelectedImage(null);
+    } catch (err) {
+      toast.error('Failed to send image');
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   return (
     <>
@@ -40,6 +79,17 @@ export default function MediaDropdown() {
             setSelectedImage(null);
           }}
           selectedImage={selectedImage}
+          isLoading={isLoading}
+          handleSendImage={handleSendImage}
+        />
+      )}
+      {selectedVideo && (
+        <MediaVideoDialog
+          isOpen={selectedVideo !== null}
+          onClose={() => {
+            setSelectedVideo(null);
+          }}
+          selectedVideo={selectedVideo}
           isLoading={isLoading}
         />
       )}
