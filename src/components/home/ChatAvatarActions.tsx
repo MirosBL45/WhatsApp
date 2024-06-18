@@ -25,7 +25,7 @@ export default function ChatAvatarActions({
   const fromAI = message.sender?.name === 'ChatGPT';
   const isGroup = selectedConversation?.isGroup;
 
-  const handleKickUser = async (e: React.MouseEvent) => {
+  async function handleKickUser(e: React.MouseEvent) {
     if (fromAI) return;
     e.stopPropagation();
     if (!selectedConversation) return;
@@ -44,9 +44,9 @@ export default function ChatAvatarActions({
     } catch (error) {
       toast.error('Failed to kick user');
     }
-  };
+  }
 
-  const handleCreateConversation = async () => {
+  async function handleCreateConversation() {
     if (fromAI) return;
 
     try {
@@ -66,7 +66,7 @@ export default function ChatAvatarActions({
     } catch (error) {
       toast.error('Failed to create conversation');
     }
-  };
+  }
 
   return (
     <div
