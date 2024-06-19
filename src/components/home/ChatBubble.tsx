@@ -12,6 +12,7 @@ import { useState } from 'react';
 import DateIndicator from './DateIndicator';
 import ChatBubbleAvatar from './ChatBubbleAvatar';
 import ChatAvatarActions from './ChatAvatarActions';
+import { Bot } from 'lucide-react';
 
 type ChatBubbleProps = {
   message: IMessage;
@@ -31,10 +32,15 @@ export default function ChatBubble({
 
   const { selectedConversation } = useConversationStore();
   const isMember =
-    selectedConversation?.participants.includes(message.sender._id) || false;
+    selectedConversation?.participants.includes(message.sender?._id) || false;
   const isGroup = selectedConversation?.isGroup;
-  const fromMe = message.sender._id === me._id;
-  const bgClass = fromMe ? 'bg-green-chat' : 'bg-white dark:bg-gray-primary';
+  const fromMe = message.sender?._id === me._id;
+  const fromAI = message.sender?.name === 'ChatGPT';
+  const bgClass = fromMe
+    ? 'bg-green-chat'
+    : !fromAI
+      ? 'bg-white dark:bg-gray-primary'
+      : 'bg-blue-500 text-white';
 
   const [open, setOpen] = useState(false);
 
@@ -57,20 +63,21 @@ export default function ChatBubble({
     return (
       <>
         <DateIndicator message={message} previousMessage={previousMessage} />
-
         <div className="flex gap-1 w-2/3">
           <ChatBubbleAvatar
             isGroup={isGroup}
             isMember={isMember}
             message={message}
+            fromAI={fromAI}
           />
           <div
             className={`flex flex-col z-20 max-w-fit px-2 pt-1 rounded-md shadow-md relative ${bgClass}`}
           >
-            <OtherMessageIndicator />
-            {isGroup && <ChatAvatarActions message={message} me={me} />}
-
-            {/* {<ChatAvatarActions message={message} me={me} />} */}
+            {!fromAI && <OtherMessageIndicator />}
+            {fromAI && (
+              <Bot size={16} className="absolute bottom-[2px] left-2" />
+            )}
+            {<ChatAvatarActions message={message} me={me} />}
             {renderMessageContent()}
             {open && (
               <ImageDialog
@@ -79,7 +86,6 @@ export default function ChatBubble({
                 onClose={() => setOpen(false)}
               />
             )}
-
             <MessageTime time={time} fromMe={fromMe} />
           </div>
         </div>
