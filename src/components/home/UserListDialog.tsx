@@ -1,5 +1,3 @@
-'use client';
-
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -21,7 +19,7 @@ import { api } from '../../../convex/_generated/api';
 import toast from 'react-hot-toast';
 import { useConversationStore } from '@/store/chat-store';
 
-function UserListDialog() {
+const UserListDialog = () => {
   const [selectedUsers, setSelectedUsers] = useState<Id<'users'>[]>([]);
   const [groupName, setGroupName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -41,14 +39,13 @@ function UserListDialog() {
   async function handleCreateConversation() {
     if (selectedUsers.length === 0) return;
     setIsLoading(true);
-
     try {
       const isGroup = selectedUsers.length > 1;
 
       let conversationId;
       if (!isGroup) {
         conversationId = await createConversation({
-          participants: [...selectedUsers, me?._id],
+          participants: [...selectedUsers, me?._id!],
           isGroup: false,
         });
       } else {
@@ -56,16 +53,16 @@ function UserListDialog() {
 
         const result = await fetch(postUrl, {
           method: 'POST',
-          headers: { 'Content-Type': selectedImage?.type },
+          headers: { 'Content-Type': selectedImage?.type! },
           body: selectedImage,
         });
 
         const { storageId } = await result.json();
 
         conversationId = await createConversation({
-          participants: [...selectedUsers, me?._id],
+          participants: [...selectedUsers, me?._id!],
           isGroup: true,
-          admin: me?._id,
+          admin: me?._id!,
           groupName,
           groupImage: storageId,
         });
@@ -90,18 +87,18 @@ function UserListDialog() {
         name: conversationName,
         admin: me?._id!,
       });
-    } catch (error) {
+    } catch (err) {
       toast.error('Failed to create conversation');
-      console.error(error);
+      console.error(err);
     } finally {
       setIsLoading(false);
     }
   }
 
   useEffect(() => {
-    if (!selectedImage) return setSelectedImage('');
+    if (!selectedImage) return setRenderedImage('');
     const reader = new FileReader();
-    reader.onload = (e) => setRenderedImage(e.target?.result);
+    reader.onload = (e) => setRenderedImage(e.target?.result as string);
     reader.readAsDataURL(selectedImage);
   }, [selectedImage]);
 
@@ -112,7 +109,6 @@ function UserListDialog() {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          {/* TODO: <DialogClose /> will be here */}
           <DialogClose ref={dialogCloseRef} />
           <DialogTitle>USERS</DialogTitle>
         </DialogHeader>
@@ -128,13 +124,12 @@ function UserListDialog() {
             />
           </div>
         )}
-        {/* TODO: input file */}
         <input
           type="file"
           accept="image/*"
           ref={imgRef}
           hidden
-          onChange={(e) => setSelectedImage(e.target.files[0])}
+          onChange={(e) => setSelectedImage(e.target.files![0])}
         />
         {selectedUsers.length > 1 && (
           <>
@@ -203,7 +198,6 @@ function UserListDialog() {
               isLoading
             }
           >
-            {/* spinner */}
             {isLoading ? (
               <div className="w-5 h-5 border-t-2 border-b-2  rounded-full animate-spin" />
             ) : (
@@ -214,5 +208,6 @@ function UserListDialog() {
       </DialogContent>
     </Dialog>
   );
-}
+};
+
 export default UserListDialog;
