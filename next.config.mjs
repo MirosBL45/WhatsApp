@@ -1,7 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     images: {
-        domains: ['zany-lyrebird-582.convex.cloud', 'oaidalleapiprodscus.blob.core.windows.net'],
+        remotePatterns: [
+            { hostname: "zany-lyrebird-582.convex.cloud" },
+            { hostname: "oaidalleapiprodscus.blob.core.windows.net" },
+        ],
     },
 };
 
